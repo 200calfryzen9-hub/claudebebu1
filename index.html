@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#22c55e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="WagyuMate" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="apple-touch-icon" href="/icon.png" />
+    
+    <title>WagyuMate - 黒毛和牛繁殖管理</title>
+    
+    <!-- Using Tailwind via CDN for simplicity as per original setup. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              wagyu: {
+                50: '#f2fcf5',
+                100: '#e1f8e8',
+                200: '#bbf0cf',
+                300: '#86e0ad',
+                400: '#4ace85',
+                500: '#22c55e',
+                600: '#16a34a',
+                700: '#15803d',
+                800: '#166534',
+                900: '#14532d',
+              },
+              gold: '#fbbf24',
+              silver: '#94a3b8',
+              bronze: '#b45309',
+            },
+            boxShadow: {
+              'soft': '0 2px 12px -2px rgba(22, 101, 52, 0.08)',
+              'card': '0 4px 20px -4px rgba(0, 0, 0, 0.08)',
+              'glow': '0 8px 30px -6px rgba(34, 197, 94, 0.35)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Custom scrollbar for mobile feel */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+      }
+      .animate-pop {
+        animation: pop 0.3s ease-out;
+      }
+      @keyframes pop {
+        0% { transform: scale(0.9); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.22s ease-out;
+      }
+      @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(8px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      .hero-gradient {
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 55%, #14532d 100%);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-gradient::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle at 85% -10%, rgba(255,255,255,0.18) 0%, transparent 45%),
+                           radial-gradient(circle at -10% 110%, rgba(255,255,255,0.10) 0%, transparent 40%);
+        pointer-events: none;
+      }
+      .tap-card {
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .tap-card:active { transform: scale(0.98); }
+      /* ✨ キラキラ: シルバーシマー */
+      .shimmer { position: relative; overflow: hidden; }
+      .shimmer::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.78) 50%, rgba(255,255,255,0.55) 55%, transparent 75%);
+        background-size: 200% 100%;
+        animation: shimmer-slide 2.4s ease-in-out infinite;
+        pointer-events: none; border-radius: inherit;
+      }
+      @keyframes shimmer-slide {
+        0% { background-position: 200% center; }
+        100% { background-position: -200% center; }
+      }
+      /* ✨ キラキラ: レインボーグリッター */
+      .rainbow-glitter { position: relative; overflow: hidden; }
+      .rainbow-glitter::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(120deg, rgba(255,100,100,0.18), rgba(255,180,50,0.18), rgba(80,220,120,0.18), rgba(60,180,255,0.18), rgba(180,80,255,0.18), rgba(255,100,180,0.18));
+        background-size: 300% 100%;
+        animation: rainbow-flow 3s linear infinite;
+        pointer-events: none; border-radius: inherit;
+      }
+      .rainbow-glitter::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.42) 50%, transparent 70%);
+        background-size: 200% 100%;
+        animation: shimmer-slide 2s ease-in-out infinite 0.3s;
+        pointer-events: none; border-radius: inherit;
+      }
+      @keyframes rainbow-flow {
+        0% { background-position: 0% center; }
+        100% { background-position: 300% center; }
+      }
+      /* Prevent pull-to-refresh on mobile which feels less app-like */
+      body {
+        overscroll-behavior-y: none;
+      }
+      /* Safe area padding for iPhones with notches */
+      .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      /* 予定超過アラート点滅 */
+      .animate-blink {
+        animation: blink-alert 1s ease-in-out infinite;
+      }
+      @keyframes blink-alert {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.25; transform: scale(1.15); }
+      }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "recharts": "https://esm.sh/recharts@^3.7.0",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+    "firebase/database": "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js",
+    "firebase/": "https://esm.sh/firebase@^12.9.0/"
+  }
+}
+</script>
+</head>
+  <body class="bg-gray-50 text-gray-800 antialiased h-screen overflow-hidden">
+    <div id="root" class="h-full"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

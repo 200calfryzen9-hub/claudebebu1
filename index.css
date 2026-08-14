@@ -1,0 +1,152 @@
+/* Tailwind directives removed to avoid conflict with CDN in index.html */
+
+/* Custom scrollbar for mobile feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.animate-pop {
+  animation: pop 0.3s ease-out;
+}
+@keyframes pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Prevent pull-to-refresh on mobile which feels less app-like */
+body {
+  overscroll-behavior-y: none;
+}
+/* Safe area padding for iPhones with notches */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+/* Tap card feedback */
+.tap-card {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.tap-card:active { transform: scale(0.98); }
+
+/* ============================================
+   ✨ キラキラ エフェクト 2種類
+   ============================================ */
+
+/* タイプ1: シルバーシマー（上品な光の流れ） */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 25%,
+    rgba(255,255,255,0.55) 45%,
+    rgba(255,255,255,0.78) 50%,
+    rgba(255,255,255,0.55) 55%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-slide 2.4s ease-in-out infinite;
+  pointer-events: none;
+  border-radius: inherit;
+}
+@keyframes shimmer-slide {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* タイプ2: レインボーグリッター（虹色に輝く） */
+.rainbow-glitter {
+  position: relative;
+  overflow: hidden;
+}
+.rainbow-glitter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(255,100,100,0.18),
+    rgba(255,180,50,0.18),
+    rgba(80,220,120,0.18),
+    rgba(60,180,255,0.18),
+    rgba(180,80,255,0.18),
+    rgba(255,100,180,0.18)
+  );
+  background-size: 300% 100%;
+  animation: rainbow-flow 3s linear infinite;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.rainbow-glitter::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255,255,255,0.42) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-slide 2s ease-in-out infinite 0.3s;
+  pointer-events: none;
+  border-radius: inherit;
+}
+@keyframes rainbow-flow {
+  0%   { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+/* animate-fade-in */
+.animate-fade-in {
+  animation: fadeIn 0.22s ease-out;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero gradient header */
+.hero-gradient {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 55%, #14532d 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 85% -10%, rgba(255,255,255,0.18) 0%, transparent 45%),
+    radial-gradient(circle at -10% 110%, rgba(255,255,255,0.10) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+/* 🚨 予定超過アラート点滅 */
+.animate-blink {
+  animation: blink-alert 1s ease-in-out infinite;
+}
+@keyframes blink-alert {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.15); }
+}

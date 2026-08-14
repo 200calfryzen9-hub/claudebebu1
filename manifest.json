@@ -1,0 +1,17 @@
+{
+  "name": "WagyuMate",
+  "short_name": "WagyuMate",
+  "description": "黒毛和牛繁殖管理システム",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#22c55e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
