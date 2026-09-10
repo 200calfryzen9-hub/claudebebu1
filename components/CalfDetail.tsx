@@ -169,6 +169,7 @@ export const CalfDetail: React.FC<CalfDetailProps> = ({ calf, allCows, onBack, o
                                 <div><p className="text-[10px] text-gray-400 mb-0.5">せり月(出荷月)</p><p className="font-medium text-sm">{calf.auctionDate ? formatDateJP(calf.auctionDate) : '未定'}</p></div>
                                 <div><p className="text-[10px] text-gray-400 mb-0.5">販売額</p><p className="font-medium text-sm text-wagyu-700">{calf.price ? `¥${calf.price.toLocaleString()}` : '-'}</p></div>
                                 <div><p className="text-[10px] text-gray-400 mb-0.5">体重</p><p className="font-medium text-sm">{calf.weight ? `${calf.weight} kg` : '-'}</p></div>
+                                <div><p className="text-[10px] text-gray-400 mb-0.5">せり時日齢</p><p className="font-medium text-sm">{calf.ageInDays ? `${calf.ageInDays} 日` : '-'}</p></div>
                             </div>
                         </div>
                         
@@ -274,7 +275,7 @@ export const CalfDetail: React.FC<CalfDetailProps> = ({ calf, allCows, onBack, o
                                 onChange={(val) => setEditForm({...editForm, auctionDate: val})}
                             />
                         </div>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-3 gap-2">
                             <div>
                             <label className="text-xs text-gray-500 block mb-1">販売額 (千円)</label>
                             <input type="number" className="w-full p-2 border rounded-lg" value={displayPrice} onChange={e => {
@@ -285,6 +286,10 @@ export const CalfDetail: React.FC<CalfDetailProps> = ({ calf, allCows, onBack, o
                             <div>
                             <label className="text-xs text-gray-500 block mb-1">体重 (kg)</label>
                             <input type="number" className="w-full p-2 border rounded-lg" value={editForm.weight || ''} onChange={e => setEditForm({...editForm, weight: e.target.value ? Number(e.target.value) : undefined})} />
+                            </div>
+                            <div>
+                            <label className="text-xs text-gray-500 block mb-1">せり時日齢</label>
+                            <input type="number" className="w-full p-2 border rounded-lg" value={editForm.ageInDays || ''} onChange={e => setEditForm({...editForm, ageInDays: e.target.value ? Number(e.target.value) : undefined})} />
                             </div>
                         </div>
 

@@ -69,6 +69,7 @@ export interface Calf {
   grade?: string; 
   bms?: number; 
   auctionDate?: string; // Existing, can be used for "せり月"
+  ageInDays?: number; // せり時点の日齢(伝票記載の値)
   notes?: Note[]; // Added memo field
   isRemoved?: boolean; // 抹消（アーカイブ）フラグ
 }

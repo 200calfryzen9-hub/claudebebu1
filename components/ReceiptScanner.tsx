@@ -102,8 +102,15 @@ export const ReceiptScanner: React.FC<ReceiptScannerProps> = ({ onExtract, onClo
     const [motherFatherName, setMotherFatherName] = useState('');
     const [motherMotherFatherName, setMotherMotherFatherName] = useState('');
 
+    const applyParsed = (result: ParsedReceipt) => {
+        setParsed(result);
+        setFatherName(result.fatherName || '');
+        setMotherFatherName(result.motherFatherName || '');
+        setMotherMotherFatherName(result.motherMotherFatherName || '');
+    };
+
     const handlePasteAnalyze = () => {
-        setParsed(parseAssenReceipt(pastedText));
+        applyParsed(parseAssenReceipt(pastedText));
         setPhase('review');
     };
 
@@ -130,7 +137,7 @@ export const ReceiptScanner: React.FC<ReceiptScannerProps> = ({ onExtract, onClo
             const { data: { text } } = await worker.recognize(processedBlob);
             await worker.terminate();
 
-            setParsed(parseAssenReceipt(text));
+            applyParsed(parseAssenReceipt(text));
             setPhase('review');
         } catch (err) {
             console.error('OCR failed:', err);
@@ -147,6 +154,7 @@ export const ReceiptScanner: React.FC<ReceiptScannerProps> = ({ onExtract, onClo
         if (parsed.weight !== undefined) data.weight = parsed.weight;
         if (parsed.price !== undefined) data.price = parsed.price;
         if (parsed.auctionDate) data.auctionDate = parsed.auctionDate;
+        if (parsed.ageInDays !== undefined) data.ageInDays = parsed.ageInDays;
         if (fatherName) data.fatherName = fatherName;
         if (motherFatherName) data.motherFatherName = motherFatherName;
         if (motherMotherFatherName) data.motherMotherFatherName = motherMotherFatherName;
@@ -285,6 +293,7 @@ export const ReceiptScanner: React.FC<ReceiptScannerProps> = ({ onExtract, onClo
 
                             <EraDateInput
                                 label="生年月日"
+                                fixedEra="REIWA"
                                 value={parsed.birthDate || ''}
                                 onChange={(val) => setParsed({ ...parsed, birthDate: val })}
                             />
@@ -304,11 +313,12 @@ export const ReceiptScanner: React.FC<ReceiptScannerProps> = ({ onExtract, onClo
 
                             <EraDateInput
                                 label="開催日(せり月)"
+                                fixedEra="REIWA"
                                 value={parsed.auctionDate || ''}
                                 onChange={(val) => setParsed({ ...parsed, auctionDate: val })}
                             />
 
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-3 gap-2">
                                 <div>
                                     <label className="text-xs text-gray-500 block mb-1">せり価格 (円)</label>
                                     <input
@@ -327,10 +337,19 @@ export const ReceiptScanner: React.FC<ReceiptScannerProps> = ({ onExtract, onClo
                                         onChange={(e) => setParsed({ ...parsed, weight: e.target.value ? Number(e.target.value) : undefined })}
                                     />
                                 </div>
+                                <div>
+                                    <label className="text-xs text-gray-500 block mb-1">日齢</label>
+                                    <input
+                                        type="number"
+                                        className="w-full p-2 border rounded-lg"
+                                        value={parsed.ageInDays ?? ''}
+                                        onChange={(e) => setParsed({ ...parsed, ageInDays: e.target.value ? Number(e.target.value) : undefined })}
+                                    />
+                                </div>
                             </div>
 
                             <div className="border-t border-gray-100 pt-3">
-                                <p className="text-xs text-gray-400 mb-2">血統は自動読み取りに対応していません。伝票を見ながら入力してください。</p>
+                                <p className="text-xs text-gray-400 mb-2">血統は伝票の並び順から自動認識を試みています。誤りがあれば伝票を見ながら修正してください。</p>
                                 <div className="space-y-2">
                                     <div>
                                         <label className="text-xs text-gray-500 block mb-1">種雄牛(父)</label>
