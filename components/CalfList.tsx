@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Calf } from '../types';
-import { Baby, Plus, Search } from 'lucide-react';
+import { Baby, Plus, Search, ScanLine } from 'lucide-react';
 import { formatDateJP, calculateAge } from '../utils/breedingService';
 
 interface CalfListProps {
   calves: Calf[];
   onCalfClick: (calfId: string) => void;
   onAddCalfClick: () => void;
+  onScanReceiptClick: () => void;
 }
 
-export const CalfList: React.FC<CalfListProps> = ({ calves, onCalfClick, onAddCalfClick }) => {
+export const CalfList: React.FC<CalfListProps> = ({ calves, onCalfClick, onAddCalfClick, onScanReceiptClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterMode, setFilterMode] = useState<'ALL' | 'REMOVED'>('ALL');
 
@@ -124,7 +125,14 @@ export const CalfList: React.FC<CalfListProps> = ({ calves, onCalfClick, onAddCa
       </div>
 
       {/* FAB */}
-      <button 
+      <button
+        onClick={onScanReceiptClick}
+        className="fixed bottom-40 right-6 w-12 h-12 bg-white text-wagyu-600 border border-wagyu-200 rounded-full flex items-center justify-center shadow-glow hover:bg-wagyu-50 transition-all z-20 active:scale-90"
+        title="伝票をスキャンして追加/更新"
+      >
+        <ScanLine size={22} />
+      </button>
+      <button
         onClick={onAddCalfClick}
         className="fixed bottom-20 right-6 w-14 h-14 bg-wagyu-600 text-white rounded-full flex items-center justify-center shadow-glow hover:bg-wagyu-700 transition-all z-20 active:scale-90"
       >

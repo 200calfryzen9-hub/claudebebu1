@@ -61,7 +61,9 @@ export interface Calf {
   name?: string;
   birthDate: string;
   sex: 'MALE' | 'FEMALE';
-  fatherName?: string; 
+  fatherName?: string;
+  motherFatherName?: string; // 母の父(母方祖父)
+  motherMotherFatherName?: string; // 母の母の父(母方曾祖父)
   price?: number;
   weight?: number;
   grade?: string; 

@@ -10,10 +10,11 @@ import { Analytics } from './components/Analytics';
 import { Settings } from './components/Settings';
 import { MOCK_COWS, MOCK_CALVES } from './data/mockData';
 import { DEFAULT_SETTINGS, MOCK_BULLS as INITIAL_BULLS } from './constants';
-import { generateAlerts, calculateExpectedCalvingDate, recalculateCowStatus, daysBetween, parseDate, resolveFatherName } from './utils/breedingService';
+import { generateAlerts, calculateExpectedCalvingDate, recalculateCowStatus, daysBetween, parseDate, resolveFatherName, earTagLast5 } from './utils/breedingService';
 import { Cow, BreedingEvent, EventType, BreedingStatus, GeneralEvent, Calf } from './types';
 import { Wifi, WifiOff } from 'lucide-react';
 import { initFirebase, saveToRemote, subscribeToRemote } from './utils/firebaseService';
+import { ReceiptScanner } from './components/ReceiptScanner';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -60,6 +61,7 @@ export default function App() {
   const [selectedCowId, setSelectedCowId] = useState<string | null>(null);
   const [selectedCalfId, setSelectedCalfId] = useState<string | null>(null);
   const [lastViewedCowId, setLastViewedCowId] = useState<string | null>(null);
+  const [showListScanner, setShowListScanner] = useState(false);
   
   const [bullList, setBullList] = useState<string[]>(() => {
     try {
@@ -231,6 +233,25 @@ export default function App() {
       setCalves(prev => prev.map(c => c.id === updatedCalf.id ? updatedCalf : c));
   };
   const handleDeleteCalf = (calfId: string) => setCalves(prev => prev.filter(c => c.id !== calfId));
+  // 子牛一覧からの伝票スキャン: 耳標番号(末尾5桁)が既存の子牛と一致すれば更新、なければ新規作成する
+  const handleListScanExtract = (data: Partial<Calf>) => {
+      const scannedTag = earTagLast5(data.earTag);
+      const existing = scannedTag ? calves.find(c => earTagLast5(c.earTag) === scannedTag) : undefined;
+      if (existing) {
+          const merged: Calf = { ...existing, ...data };
+          handleUpdateCalf(merged);
+          handleCalfClick(existing.id);
+      } else {
+          const newCalf: Calf = {
+              id: Date.now().toString(),
+              sex: 'MALE',
+              birthDate: new Date().toISOString().split('T')[0],
+              ...data,
+          };
+          handleAddCalf(newCalf);
+          handleCalfClick(newCalf.id);
+      }
+  };
   const handleResetSalesData = () => setCalves(prev => prev.map(c => ({ ...c, price: undefined, weight: undefined, grade: undefined, auctionDate: undefined })));
   const handleAddGeneralEvent = (event: Omit<GeneralEvent, 'id'>) => { setGeneralEvents(prev => [...prev, { ...event, id: Date.now().toString() }]); };
   
@@ -301,7 +322,7 @@ export default function App() {
   switch (activeTab) {
     case 'dashboard': tabContent = ( <Dashboard cows={cows} calves={calves} alerts={alerts} onCowClick={handleCowClick} generalEvents={generalEvents} onAddGeneralEvent={handleAddGeneralEvent} onUpdateCow={handleUpdateCow} onUpdateCalf={handleUpdateCalf} /> ); break;
     case 'list': tabContent = <CowList cows={cows} onCowClick={handleCowClick} settings={settings} onAddCow={handleAddCow} lastViewedCowId={lastViewedCowId} />; break;
-    case 'calves': tabContent = <CalfList calves={enrichedCalves} onCalfClick={handleCalfClick} onAddCalfClick={() => {
+    case 'calves': tabContent = <CalfList calves={enrichedCalves} onCalfClick={handleCalfClick} onScanReceiptClick={() => setShowListScanner(true)} onAddCalfClick={() => {
         const newCalf: Calf = {
             id: Date.now().toString(),
             sex: 'MALE',
@@ -323,6 +344,9 @@ export default function App() {
       ...bullList,
       ...cows.map(c => c.fatherName),
       ...cows.map(c => c.motherFatherName),
+      ...calves.map(c => c.fatherName),
+      ...calves.map(c => c.motherFatherName),
+      ...calves.map(c => c.motherMotherFatherName),
   ].filter((v): v is string => !!v))).sort((a, b) => a.localeCompare(b, 'ja'));
 
   return (
@@ -330,6 +354,12 @@ export default function App() {
         <datalist id="bull-candidates">
             {bullCandidates.map(name => <option key={name} value={name} />)}
         </datalist>
+        {showListScanner && (
+            <ReceiptScanner
+                onExtract={handleListScanExtract}
+                onClose={() => setShowListScanner(false)}
+            />
+        )}
         {settings.sync?.enabled && ( <div className={`absolute top-0 right-0 p-2 z-50 ${syncStatus === 'ONLINE' ? 'text-green-500' : 'text-gray-400'}`}> {syncStatus === 'ONLINE' ? <Wifi size={16} /> : <WifiOff size={16} />} </div> )}
         <main className="h-screen overflow-hidden flex flex-col">
             <div className={`flex-1 overflow-y-auto relative scroll-smooth ${targetCow || targetCalf ? 'hidden' : 'block'}`}>

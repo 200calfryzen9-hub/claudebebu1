@@ -5,6 +5,11 @@ import { GESTATION_DAYS, ESTRUS_CYCLE_DAYS } from '../constants';
 // Simple date helpers
 export const parseDate = (dateStr: string) => new Date(dateStr);
 
+// 耳標番号の比較用正規化。区切りハイフンや空白を除去し末尾5桁に揃える。
+// (フル番号の先頭は地域/牧場の共通プレフィックスで、個体を区別するのは末尾5桁という慣習に合わせる)
+export const earTagLast5 = (earTag?: string): string =>
+  (earTag || '').replace(/\D/g, '').slice(-5);
+
 // FIX: Use local time for formatting to prevent timezone shifts (e.g. UTC vs JST)
 export const formatDate = (date: Date) => {
   const year = date.getFullYear();
